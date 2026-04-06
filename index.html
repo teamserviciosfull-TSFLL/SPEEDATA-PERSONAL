@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Servicios Full-Speedata</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%2300D1FF%22 d=%22M192 32c0 17.7 14.3 32 32 32c123.7 0 224 100.3 224 224c0 17.7 14.3 32 32 32s32-14.3 32-32C512 128.9 383.1 0 224 0c-17.7 0-32 14.3-32 32zM0 480c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96s96 43 96 96c0 17.7 14.3 32 32 32s32-14.3 32-32c0-88.4-71.6-160-160-160S0 391.6 0 480zM352 288c0 17.7 14.3 32 32 32s32-14.3 32-32c0-70.7-57.3-128-128-128c-17.7 0-32 14.3-32 32s14.3 32 32 32c35.3 0 64 28.7 64 64z%22/></svg>">
+
+    <style>
+        :root {
+            --primary-color: #00D1FF;
+            --bg-color: #0b101a;
+        }
+
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+            background: var(--bg-color); 
+            color: var(--primary-color); 
+            font-family: 'Orbitron', sans-serif; 
+        }
+
+        /* Contenedor de Carga Estilizado */
+        #loader { 
+            position: fixed; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 10;
+            background: radial-gradient(circle, #161d2b 0%, #0b101a 100%);
+        }
+
+        .loader-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .fa-satellite-dish { 
+            font-size: 70px; 
+            filter: drop-shadow(0 0 15px var(--primary-color));
+            animation: pulse-glow 2s infinite ease-in-out; 
+        }
+
+        #loader p {
+            margin-top: 25px;
+            font-size: 14px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        @keyframes pulse-glow { 
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 15px var(--primary-color)); } 
+            50% { transform: scale(1.1); opacity: 0.6; filter: drop-shadow(0 0 5px var(--primary-color)); } 
+        }
+
+        /* Iframe con transición suave */
+        iframe { 
+            width: 100%; 
+            height: 100vh; 
+            border: none; 
+            display: block; 
+            opacity: 0; 
+            transform: scale(1.02);
+            transition: opacity 1s ease-out, transform 0.8s ease-out; 
+        }
+
+        iframe.loaded {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="loader-content">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <p>Speedata</p>
+        </div>
+    </div>
+
+    <iframe id="app" 
+        src="https://script.google.com/macros/s/AKfycbwcLiTVnvKm1tar_W5NLFaTjZ7mHsQNyvp0QZosEQqCmojujS-ps3ufmwm7m_UtOXIu/exec" 
+       
+        onload="handleLoad()">
+    </iframe>
+
+    <script>
+        function handleLoad() {
+            const loader = document.getElementById('loader');
+            const iframe = document.getElementById('app');
+
+            // Añadimos la clase para animar la entrada del iframe
+            iframe.classList.add('loaded');
+
+            // Desvanecemos el cargador
+            loader.style.transition = 'opacity 0.6s ease';
+            loader.style.opacity = '0';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 600);
+        }
+    </script>
+</body>
+</html>

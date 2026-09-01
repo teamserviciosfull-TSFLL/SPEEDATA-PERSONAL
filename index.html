@@ -64,15 +64,6 @@
             background: var(--primary); color: var(--bg);
             box-shadow: 0 0 15px var(--primary);
         }
-
-        /* Contenedor iFrame */
-        #app-frame {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
-            display: none;
-            z-index: 1;
-        }
     </style>
 </head>
 <body>
@@ -83,38 +74,21 @@
             <i class="fa-solid fa-satellite-dish"></i>
             <p id="status">Iniciando Speedata</p>
             <div class="bar-wrap"><div class="bar-fill"></div></div>
-            <button id="btn-manual">ABRIR EN PESTAÑA NUEVA</button>
+            <button id="btn-manual">ABRIR SISTEMA</button>
         </div>
     </div>
 
-    <!-- CONTENIDO EMBEBIDO (iFRAME) -->
-    <iframe 
-        id="app-frame"
-        src=""
-        allow="autoplay; camera; microphone; geolocation; fullscreen"
-        allowfullscreen="true">
-    </iframe>
-
     <script>
-        const BASE_URL = "https://script.google.com/macros/s/AKfycbzMMmMV3PfhAAP2xYnioatBlmwdf-8qZDhTANMwwwf6IhjqZQJmOMYt6MoEcXgKFjDLKA/exec";
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbxCVkIUwvWCCCnupdvC08C7Tf8UVnE7u2NyliH7rVIajQAoCkcEXzPtOTr7-3HqiUbrwg/exec";
         let appCargada = false;
 
         function cargarApp() {
             if (appCargada) return;
             appCargada = true;
 
-            const splash = document.getElementById('splash');
-            const iframe = document.getElementById('app-frame');
-
-            // Asignar dinámicamente la URL al iframe
-            iframe.src = BASE_URL;
-            iframe.style.display = 'block';
-
-            // Transición para desvanecer la pantalla de carga
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 500);
+            // Redirección directa: Google Apps Script bloquea ser embebido en iframe,
+            // así que navegamos directamente a la URL del sistema.
+            window.location.href = BASE_URL;
         }
 
         // Se ejecuta al completar la animación (2.6 segundos)
@@ -123,13 +97,14 @@
             cargarApp();
         }, 2600);
 
-        // Respaldo de seguridad por si el navegador bloquea las cookies de terceros
+        // Respaldo de seguridad: si por alguna razón la redirección automática
+        // no ocurrió (bloqueador de pop-ups, etc.), mostramos un botón manual.
         setTimeout(() => {
-            if (!appCargada || document.getElementById('splash').style.display !== 'none') {
+            if (!appCargada) {
                 const btn = document.getElementById('btn-manual');
                 btn.style.display = "inline-block";
-                btn.onclick = () => window.open(BASE_URL, '_blank');
-                document.getElementById('status').innerText = "Si no carga, presiona:";
+                btn.onclick = () => { window.location.href = BASE_URL; };
+                document.getElementById('status').innerText = "Si no cargó, presiona:";
             }
         }, 6000);
     </script>

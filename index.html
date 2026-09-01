@@ -14,102 +14,114 @@
             height: 100%; width: 100%; overflow: hidden;
             background: var(--bg); color: var(--primary);
             font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Contenedor del Splash / Animación */
+        .loader-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
+            background: var(--bg); z-index: 10;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
         .loader { text-align: center; cursor: pointer; }
 
-        /* Animación del Icono Satélite */
         .fa-satellite-dish {
             font-size: 72px;
             filter: drop-shadow(0 0 18px var(--primary));
             animation: pulse 1.2s ease-in-out infinite;
         }
 
-        p { 
-            margin-top: 22px; 
-            font-size: 13px; 
-            letter-spacing: 6px; 
-            text-transform: uppercase; 
-        }
+        p { margin-top: 22px; font-size: 13px; letter-spacing: 6px; text-transform: uppercase; }
 
-        /* Contenedor de la Barra */
         .bar-wrap {
             width: 180px; height: 4px; background: rgba(0,209,255,.15);
             border-radius: 99px; margin: 18px auto 0; overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 209, 255, 0.2);
         }
 
-        /* Animación del Relleno de la Barra (Dura 2.5s) */
         .bar-fill {
-            height: 100%; 
-            background: var(--primary); 
-            width: 0%;
+            height: 100%; background: var(--primary); width: 0%;
             box-shadow: 0 0 12px var(--primary);
             animation: load 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        /* Keyframes para el Latido */
         @keyframes pulse { 
             0%, 100% { transform: scale(1); opacity: 0.8; } 
             50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 25px var(--primary)); } 
         }
 
-        /* Keyframes para Llenar la Barra */
-        @keyframes load { 
-            0% { width: 0%; }
-            50% { width: 60%; }
-            100% { width: 100%; } 
-        }
-        
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
         #btn-manual {
-            margin-top: 20px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 20px;
-            font-family: 'Orbitron';
-            cursor: pointer;
-            display: none;
-            transition: all 0.3s ease;
+            margin-top: 20px; background: transparent;
+            border: 1px solid var(--primary); color: var(--primary);
+            padding: 10px 20px; font-family: 'Orbitron'; cursor: pointer; display: none;
         }
 
-        #btn-manual:hover {
-            background: var(--primary);
-            color: var(--bg);
-            box-shadow: 0 0 15px var(--primary);
+        /* Estilo para el iFrame oculto inicialmente */
+        #app-frame {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+            display: none; /* Oculto hasta que termine la animación */
+            z-index: 1;
         }
     </style>
 </head>
 <body>
 
-    <div class="loader" onclick="irAApp()">
-        <i class="fa-solid fa-satellite-dish"></i>
-        <p id="status">Iniciando Speedata</p>
-        <div class="bar-wrap"><div class="bar-fill"></div></div>
-        <button id="btn-manual">ENTRAR MANUALMENTE</button>
+    <!-- PANTALLA DE CARGA / ANIMACIÓN -->
+    <div class="loader-container" id="splash">
+        <div class="loader" onclick="cargarApp()">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <p id="status">Iniciando Speedata</p>
+            <div class="bar-wrap"><div class="bar-fill"></div></div>
+            <button id="btn-manual">ENTRAR MANUALMENTE</button>
+        </div>
     </div>
 
-    <script>
-        const FINAL_URL = "https://script.google.com/macros/s/AKfycbzMMmMV3PfhAAP2xYnioatBlmwdf-8qZDhTANMwwwf6IhjqZQJmOMYt6MoEcXgKFjDLKA/exec";
+    <!-- CONTENIDO EMBEBIDO (iFrame) -->
+    <iframe 
+        id="app-frame"
+        src="https://script.google.com/macros/s/AKfycbzMMmMV3PfhAAP2xYnioatBlmwdf-8qZDhTANMwwwf6IhjqZQJmOMYt6MoEcXgKFjDLKA/exec"
+        allow="autoplay; fullscreen"
+        allowfullscreen="true">
+    </iframe>
 
-        function irAApp() {
-            window.location.href = FINAL_URL;
+    <script>
+        let appCargada = false;
+
+        function cargarApp() {
+            if (appCargada) return;
+            appCargada = true;
+
+            const splash = document.getElementById('splash');
+            const iframe = document.getElementById('app-frame');
+
+            // Mostrar el iframe
+            iframe.style.display = 'block';
+
+            // Transición suave para ocultar la animación
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 500);
         }
 
-        // Redirige justo después de que la barra de carga termina su animación (2.6s)
+        // Muestra la animación completa durante 2.6s y luego muestra el app embebido
         setTimeout(() => {
-            document.getElementById('status').innerText = "Conectando...";
-            irAApp();
+            document.getElementById('status').innerText = "Cargando Interfaz...";
+            cargarApp();
         }, 2600);
 
-        // Si tarda más de 5 segundos, muestra el botón manual
+        // Respaldos de seguridad si tarda más de 5s
         setTimeout(() => {
-            document.getElementById('btn-manual').style.display = "inline-block";
-            document.getElementById('status').innerText = "Click para entrar";
+            if (!appCargada) {
+                document.getElementById('btn-manual').style.display = "inline-block";
+                document.getElementById('status').innerText = "Click para entrar";
+            }
         }, 5000);
     </script>
 </body>
-</html
-
-        
+</html>  

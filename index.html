@@ -16,7 +16,7 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Contenedor del Splash / Animación */
+        /* Pantalla de Carga y Animaciones */
         .loader-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
@@ -57,39 +57,46 @@
             margin-top: 20px; background: transparent;
             border: 1px solid var(--primary); color: var(--primary);
             padding: 10px 20px; font-family: 'Orbitron'; cursor: pointer; display: none;
+            transition: all 0.3s ease;
         }
 
-        /* Estilo para el iFrame oculto inicialmente */
+        #btn-manual:hover {
+            background: var(--primary); color: var(--bg);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* Contenedor iFrame */
         #app-frame {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             border: none;
-            display: none; /* Oculto hasta que termine la animación */
+            display: none;
             z-index: 1;
         }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA / ANIMACIÓN -->
+    <!-- ANIMACIÓN DE ENTRADA (SPLASH) -->
     <div class="loader-container" id="splash">
         <div class="loader" onclick="cargarApp()">
             <i class="fa-solid fa-satellite-dish"></i>
             <p id="status">Iniciando Speedata</p>
             <div class="bar-wrap"><div class="bar-fill"></div></div>
-            <button id="btn-manual">ENTRAR MANUALMENTE</button>
+            <button id="btn-manual">ABRIR EN PESTAÑA NUEVA</button>
         </div>
     </div>
 
-    <!-- CONTENIDO EMBEBIDO (iFrame) -->
+    <!-- CONTENIDO EMBEBIDO (iFRAME) -->
     <iframe 
         id="app-frame"
-        src="https://script.google.com/macros/s/AKfycbzMMmMV3PfhAAP2xYnioatBlmwdf-8qZDhTANMwwwf6IhjqZQJmOMYt6MoEcXgKFjDLKA/exec"
-        allow="autoplay; fullscreen"
+        src=""
+        allow="autoplay; camera; microphone; geolocation; fullscreen"
         allowfullscreen="true">
     </iframe>
 
     <script>
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbzMMmMV3PfhAAP2xYnioatBlmwdf-8qZDhTANMwwwf6IhjqZQJmOMYt6MoEcXgKFjDLKA/exec";
         let appCargada = false;
 
         function cargarApp() {
@@ -99,29 +106,32 @@
             const splash = document.getElementById('splash');
             const iframe = document.getElementById('app-frame');
 
-            // Mostrar el iframe
+            // Asignar dinámicamente la URL al iframe
+            iframe.src = BASE_URL;
             iframe.style.display = 'block';
 
-            // Transición suave para ocultar la animación
+            // Transición para desvanecer la pantalla de carga
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 500);
         }
 
-        // Muestra la animación completa durante 2.6s y luego muestra el app embebido
+        // Se ejecuta al completar la animación (2.6 segundos)
         setTimeout(() => {
             document.getElementById('status').innerText = "Cargando Interfaz...";
             cargarApp();
         }, 2600);
 
-        // Respaldos de seguridad si tarda más de 5s
+        // Respaldo de seguridad por si el navegador bloquea las cookies de terceros
         setTimeout(() => {
-            if (!appCargada) {
-                document.getElementById('btn-manual').style.display = "inline-block";
-                document.getElementById('status').innerText = "Click para entrar";
+            if (!appCargada || document.getElementById('splash').style.display !== 'none') {
+                const btn = document.getElementById('btn-manual');
+                btn.style.display = "inline-block";
+                btn.onclick = () => window.open(BASE_URL, '_blank');
+                document.getElementById('status').innerText = "Si no carga, presiona:";
             }
-        }, 5000);
+        }, 6000);
     </script>
 </body>
-</html>  
+</html>
